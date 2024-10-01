@@ -38,7 +38,6 @@ var lastStepspoints = null;
 var currentPolygon = null;
 //window.currentBBox = null;
 var markerbv = null;
-import { sendPostRequest } from './postRequest.js';
 
 
 //On définit les fonctions globales
