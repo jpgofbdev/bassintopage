@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte Leaflet avec WFS JSON</title>
+    <!-- Inclure la feuille de style Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="./obvie.css">
+<style>
+ /* CSS pour le conteneur des contrôles */
+ 
+
+</style>
+
+</head>
+<body>
+    <div id="header">
+        <img src="logo.jpg" alt="Logo OFB">
+        <h1>Outil bassin versant</h1>
+        <div class="right-text">produit par la DR CVL</div>
+        <div class="icons">
+            <a href="./information.html" title="Mode d'emploi">&#x1F4D6;</a>
+            <a href="./information.html" title="Informations">&#x2139;</a>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+    <div id="controls-container" class="collapsed"> <!-- Ajoute une classe par défaut -->
+        <div class="checkbox-group">
+            <label class="checkbox-group">
+                <input type="checkbox" id="bboxbvorange-checkbox">
+                Afficher BBOX
+            </label>
+        </div>
+        <div class="checkbox-group">
+            <label>
+                <input type="checkbox" id="pollueurs-checkbox" /> Établissements pollueurs BBOX du BV
+            </label>
+        </div>
+        
+        <div class="checkbox-group">
+            <label>
+                <input type="checkbox" id="step-checkbox" /> Stations d'épuration BBOX du BV
+            </label>
+        </div>
+
+        <div class="checkbox-group">
+            <label>
+                <input type="checkbox" id="icpe-checkbox" /> ICPE BBOX du BV
+            </label>
+        </div>
+
+
+    </div>
+    <button id="toggle-controls">Choix des couches</button>
+    
+
+
+
+<!-- 	//<button id="download-button" class="download-button">Télécharger geojson bassin versant EPSG4326</button>
+ -->   
+    <label class="bboxbvorange-checkbox">
+        <input type="checkbox" id="bboxbvorange-checkbox">
+        Afficher BBOX
+    </label>
+    <div id="zoom-level">Le niveau de zoom est de 7. Le niveau conseillé pour choisir un point est de 13 au moins.</div>
+
+
+
+<!--  SCRIPT MODULES
+    ////////////////////////////////////////////////////////////////////// -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.js"></script>
+    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+    <script src="./jszip.js"></script>
+    <script src="./turf.min.js" charset="utf-8"></script>
+    <script src="https://ignf.github.io/geoportal-extensions/leaflet-latest/dist/GpPluginLeaflet.js"></script>
+    <!-- <script src="./main_loc2_nofile.js"></script> -->
+    <script src="./event.js"></script>
+
+    <script type="module" src="main.js"></script>
+    <script>
+
+
+        // Gestion du menu déroulant
+        document.getElementById('toggle-controls').addEventListener('click', function() {
+            const controlsContainer = document.getElementById('controls-container');
+            
+            // Basculer la classe "show"
+            controlsContainer.classList.toggle('show');
+
+            // Mettre à jour le texte du bouton
+            if (controlsContainer.classList.contains('show')) {
+                this.textContent = 'Couches/on';
+            } else {
+                this.textContent = 'Couches/off';
+            }
+        });
+    </script>
+
+
+</body>
+</html>
