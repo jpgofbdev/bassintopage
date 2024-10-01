@@ -264,7 +264,7 @@ function parseWFSData(data) {
 
     
     const page = 1; // Page initiale
-    const pageSize = 100; // Nombre de résultats par page
+    const pageSize = 200; // Nombre de résultats par page
     
     // Construire l'URL complète
     const urlInstallations = `${baseURL}?latlon=${latlon}&page=${page}&page_size=${pageSize}`;
