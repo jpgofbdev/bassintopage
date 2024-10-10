@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte Leaflet avec WFS JSON</title>
+    <title>OBVIE outil bassin versant</title>
     <!-- Inclure la feuille de style Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="./obvie.css">
+    <link rel="icon" href="logo_obvie_v.png" type="image/png">
+
 <style>
  /* CSS pour le conteneur des contrôles */
  
@@ -17,8 +19,8 @@
 <body>
     <div id="header">
         <img src="logo.jpg" alt="Logo OFB">
-        <h1>Outil bassin versant</h1>
-        <div class="right-text">produit par la DR CVL</div>
+        <h1>OBVIE <img src="./logo_obvie_v.png" alt="Logo Bassin Versant" class="watershed-logo"> <span class="small-italic">Outil Bassin Versant pour les Inspecteurs de l'Environnement</span></h1>
+         <div class="right-text">produit par la DR CVL</div>
         <div class="icons">
             <a href="./information.html" title="Mode d'emploi">&#x1F4D6;</a>
             <a href="./information.html" title="Informations">&#x2139;</a>
@@ -33,24 +35,32 @@
                 Afficher BBOX
             </label>
         </div>
-        <div class="checkbox-group">
-            <label>
-                <input type="checkbox" id="pollueurs-checkbox" /> Établissements pollueurs BBOX du BV
-            </label>
+        <div class="checkbox-group" style="display: flex; align-items: center;">
+            <input type="checkbox" id="pollueurs-checkbox">
+            <label for="pollueurs-checkbox" style="margin-right: 10px;">Établissements pollueurs BBOX du BV</label>
+            <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png" 
+                 alt="Légende Pollueurs" style="width: 20px; height: 30px; vertical-align: middle;">
         </div>
         
-        <div class="checkbox-group">
-            <label>
-                <input type="checkbox" id="step-checkbox" /> Stations d'épuration BBOX du BV
-            </label>
+        <div class="checkbox-group" style="display: flex; align-items: center;">
+            <input type="checkbox" id="step-checkbox">
+            <label for="step-checkbox" style="margin-right: 10px;">Stations d'épuration BBOX du BV</label>
+            <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png" 
+                 alt="Légende step" style="width: 20px; height: 30px; vertical-align: middle;">
+        </div>
+
+        <div class="checkbox-group" style="display: flex; align-items: center;">
+            <input type="checkbox" id="icpe-checkbox">
+            <label for="icpe-checkbox" style="margin-right: 10px;">ICPE dans un rayon de 10km</label>
+            <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png" 
+                 alt="Légende icpe" style="width: 20px; height: 30px; vertical-align: middle;">
         </div>
 
         <div class="checkbox-group">
             <label>
-                <input type="checkbox" id="icpe-checkbox" /> ICPE dans un rayon de 10km du point
+                <input type="checkbox" id="topagecebbox-checkbox" /> Cours d'eau BDTOPAGE
             </label>
         </div>
-
 
     </div>
     <button id="toggle-controls">Choix des couches</button>

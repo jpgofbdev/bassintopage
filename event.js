@@ -39,17 +39,6 @@ document.getElementById('step-checkbox').addEventListener('change', function(eve
 
     console.log('URL générée2:', urlbb2);
 
-    // Icône marron STEP
-/*     const customIcon = L.icon({
-        iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="black" stroke-width="2" fill="#d4a37a" />
-            </svg>
-        `),
-        iconSize: [24, 24],
-        iconAnchor: [12, 24],
-        popupAnchor: [0, -24]
-    }); */
 
     // Fetch des données
     fetch(urlbb2)
@@ -255,6 +244,10 @@ function parseWFSData(data) {
 //pour les ICPE
 // Écouteur pour les installations classées
  document.getElementById('icpe-checkbox').addEventListener('change', function(event) {
+    
+    
+    
+    
     // URL de base et paramètres pour les installations classées
     console.log( [latlng.lng, latlng.lat]);
     const baseURL = 'https://georisques.gouv.fr/api/v1/installations_classees';
@@ -318,3 +311,80 @@ function parseInstallationsData(data) {
     return markers;
 }
 
+
+
+
+
+
+
+
+//pour les cours d'eau dans la bbox
+document.getElementById('topagecebbox-checkbox').addEventListener('change', function(event) {
+/*     const baseURL3 = 'https://cors-anywhere.herokuapp.com/https://services.sandre.eaufrance.fr/geo/sandre';
+
+    const urlbb3 = `${baseURL3}?language=fre&SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0`
+        + `&TYPENAMES=sa:CoursEau_FXX_Topage2024&SRSNAME=urn:ogc:def:crs:EPSG::4326`
+        + `&BBOX=${bbox.join(',')},urn:ogc:def:crs:EPSG::4326`;
+
+    console.log('URL générée:', urlbb3); */
+
+
+    const urlbb3 = `https://services.sandre.eaufrance.fr/geo/sandre?language=fre&SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=sa:CoursEau_FXX_Topage2024&SRSNAME=urn:ogc:def:crs:EPSG::4326&BBOX=${bbox.join(',')} ,urn:ogc:def:crs:EPSG:`;
+
+
+    // Fetch des données
+    fetch(urlbb3)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.text();
+    })
+    .then(data => {
+        addGMLToMap(data);
+        //console.log('Réponse GML:', data);
+          // Appel de la fonction pour ajouter les lignes à la carte
+    })
+    .catch(error => {
+        console.error('Problème avec la requête fetch:', error);
+    });
+
+});
+
+
+
+
+
+
+
+ // Fonction pour analyser le GML et ajouter les lignes sur la carte
+            function addGMLToMap(gmlData) {
+                // Extraire les LineString du GML
+                console.log('addGMLToMap appelée');
+                var parser = new DOMParser();
+                var xmlDoc = parser.parseFromString(gmlData, "text/xml");
+                //console.log('xmldoc appelée', xmlDoc);
+  
+       // Exemple pour récupérer et transformer les LineStrings
+    var lineStrings = xmlDoc.getElementsByTagName('gml:LineString');
+    // Parcours de chaque LineString et transformation en GeoJSON
+    for (var i = 0; i < lineStrings.length; i++) {
+        var coordinates = [];
+        var posList = lineStrings[i].getElementsByTagName('gml:posList')[0].textContent.trim().split(/\s+/);
+        // Transformation de la liste de coordonnées en tableau de paires [lat, lon]
+        for (var j = 0; j < posList.length; j += 2) {
+            coordinates.push([parseFloat(posList[j + 1]), parseFloat(posList[j])]);
+        }
+        // Création de l'objet GeoJSON
+        var geoJsonLineString = {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": coordinates
+            },
+            "properties": {}
+        };
+        // Ajout à la carte Leaflet
+        L.geoJSON(geoJsonLineString).addTo(map);
+    }
+        }

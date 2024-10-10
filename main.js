@@ -7,6 +7,8 @@ window.pollutionLayer = L.layerGroup().addTo(map);
 window.icpeLayer = L.layerGroup().addTo(map);
 
 window.stepLayer = L.layerGroup().addTo(map);
+window.ceLayer = L.layerGroup().addTo(map);
+
 var jsonData = null;
 window.bbox = [];
 var greenIcon = new L.Icon({
@@ -38,6 +40,7 @@ var lastStepspoints = null;
 var currentPolygon = null;
 //window.currentBBox = null;
 var markerbv = null;
+import { sendPostRequest } from './postRequest.js';
 
 
 //On définit les fonctions globales
@@ -94,6 +97,12 @@ function initializeMap() {
                 apiKey: "essentiels",
                 onSuccess: function(config) {
                     console.log("Configuration retrieved successfully:", config);
+        
+                    if (!map) {
+                        console.error("Map is not defined. Ensure the map is initialized before calling 'go()'.");
+                        return;
+                    }
+                    
                     go();
                 },
                 onError: function(error) {
@@ -192,9 +201,9 @@ map.on('click', function(e) {
 
 
 
-        alert('Intersection trouvée avec un polygone.');
+        alert('le point choisi est bien sur un bassin versant topage');
     } else {
-        alert('Aucune intersection trouvée.');
+        alert('Les point choisi n est pas sur un BV Topage');
     }
 
 
