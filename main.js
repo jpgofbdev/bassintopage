@@ -317,10 +317,10 @@ map.on('click', function(e) {
 
 
 
-            map.on('zoomend', function() {
+/*             map.on('zoomend', function() {
                     var zoomLevel = map.getZoom();
                     document.getElementById('zoom-level').textContent = "Le niveau de zoom est de " + zoomLevel + ". Le niveau conseillé pour choisir un point est de 13 au moins.";
-                });
+                }); */
 
 //                                                                                                  SEND POST REQUEST FOR BV
 //sendPostRequest(coords, map);
