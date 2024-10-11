@@ -2,7 +2,10 @@
 proj4.defs("EPSG:2154", "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
 
 //On définit les variables pour pouvoir les utiliser dans les fichiers fonctions
-window.map = L.map("map", { zoomControl: false }).setView([46.603354, 1.888334], 7);
+window.map = L.map("map", { zoomControl: false ,    doubleClickZoom: false
+
+
+}).setView([46.603354, 1.888334], 7);
 window.pollutionLayer = L.layerGroup().addTo(map);
 window.icpeLayer = L.layerGroup().addTo(map);
 
@@ -23,6 +26,7 @@ shadowSize: [41, 41]
 
 // Charger les données GeoJSON depuis le serveur
 window.geojsonLayer;
+
 fetch('./bvtopo4326_8cvl.geojson')
     .then(response => response.json())
     .then(data => {
@@ -40,7 +44,7 @@ var lastStepspoints = null;
 var currentPolygon = null;
 //window.currentBBox = null;
 var markerbv = null;
-//import { sendPostRequest } from './postRequest.js';
+import { sendPostRequest } from './postRequest.js';
 
 
 //On définit les fonctions globales
@@ -60,30 +64,22 @@ window.convertGeoJSON=function(geojson, fromProj, toProj) {
     });
     return newGeoJSON;
 }
-function calculateBBoxFromGeoJSON(intersectedPolygon) {
-   let bbox = [];
+function calculateBBoxFromGeoJSON(feature) {
+    const coords = feature.geometry.coordinates[0]; // Utilisation des coordonnées du premier anneau du polygone
+    let minX = coords[0][0], maxX = coords[0][0];
+    let minY = coords[0][1], maxY = coords[0][1];
 
-    if (intersectedPolygon.geometry.type === 'Polygon' || intersectedPolygon.geometry.type === 'MultiPolygon') {
-        // Loop through the coordinates of each polygon
-        intersectedPolygon.geometry.coordinates.forEach(polygon => {
-            polygon.forEach(ring => {
-                ring.forEach(coord => {
-                    // Initialize bbox or update with the min/max values
-                    if (bbox.length === 0) {
-                        bbox = [coord[0], coord[1], coord[0], coord[1]];  // Initialize with [minX, minY, maxX, maxY]
-                    } else {
-                        bbox[0] = Math.min(bbox[0], coord[0]);  // minX
-                        bbox[1] = Math.min(bbox[1], coord[1]);  // minY
-                        bbox[2] = Math.max(bbox[2], coord[0]);  // maxX
-                        bbox[3] = Math.max(bbox[3], coord[1]);  // maxY
-                    }
-                });
-            });
-        });
+    for (const coord of coords) {
+        const [x, y] = coord;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
     }
 
-    return bbox.length ? bbox : null;
+    return [minX, minY, maxX, maxY];
 }
+
 
 
 
@@ -93,22 +89,22 @@ function initializeMap() {
                 console.error("Gp is not defined. Ensure the Geoportal script is loaded.");
                 return;
             }
-            Gp.Services.getConfig({
-                apiKey: "essentiels",
-                onSuccess: function(config) {
-                    console.log("Configuration retrieved successfully:", config);
-        
-                    if (!map) {
-                        console.error("Map is not defined. Ensure the map is initialized before calling 'go()'.");
-                        return;
-                    }
-                    
-                    go();
-                },
-                onError: function(error) {
-                    console.error("Failed to retrieve configuration:", error);
-                }
-            });
+    Gp.Services.getConfig({
+        apiKey: "essentiels",
+        onSuccess: function(config) {
+            console.log("Configuration retrieved successfully:", config);
+
+            if (!map) {
+                console.error("Map is not defined. Ensure the map is initialized before calling 'go()'.");
+                return;
+            }
+            
+            go();
+        },
+        onError: function(error) {
+            console.error("Failed to retrieve configuration:", error);
+        }
+    });
             function go() {
                 enableGeolocation(map);
                 var myRenderer = L.canvas({ padding: 0.5 });
@@ -149,80 +145,178 @@ function initializeMap() {
 //                                                                                                //         MAP ON CLICK  //
 
 ////////
-map.on('click', function(e) {
+let clickTimeout = null;
+const doubleClickDelay = 300; // Délai pour différencier le clic simple du double clic
+
+
+map.on('click', function(e) { 
+
+    if (clickTimeout !== null) {
+        // C'est un double clic
+        clearTimeout(clickTimeout); // Annuler le timer du clic simple
+        clickTimeout = null;
+
     window.latlng = e.latlng;
 
     var coords = [latlng.lng, latlng.lat];
-    const point = turf.point([e.latlng.lng, e.latlng.lat]);
+    const point = turf.point([latlng.lng, latlng.lat]);
 
-    // Vérifier l'intersection avec les polygones
-    const features = geojsonLayer.toGeoJSON().features;
-    window.intersectedPolygon = null;
+    // Dimensions de la BBOX (largeur de 1 degré en X, hauteur de 0.5 degré en Y)
+    const widthX = 0.5;
+    const heightY = 0.25;
 
-    for (const feature of features) {
-        const coordinates = feature.geometry.coordinates;
+    // Calcul des coordonnées de la BBOX
+    const minX = latlng.lng - (widthX / 2);
+    const maxX = latlng.lng + (widthX / 2);
+    const minY = latlng.lat - (heightY / 2);
+    const maxY = latlng.lat + (heightY / 2);
 
-        if (feature.geometry.type === 'Polygon') {
-            // Si c'est un Polygon
-            const polygon = turf.polygon(coordinates);
-            if (turf.booleanPointInPolygon(point, polygon)) {
-                intersectedPolygon = feature;
-                break;
-            }
-        } else if (feature.geometry.type === 'MultiPolygon') {
-            // Si c'est un MultiPolygon
-            const multiPolygon = turf.multiPolygon(coordinates);
-            if (turf.booleanPointInPolygon(point, multiPolygon)) {
-                intersectedPolygon = feature;
-                break;
-            }
-        } else {
-            console.warn('Géométrie non supportée :', feature.geometry.type);
+    // Création de la BBOX
+    const bbox = [minX, minY, maxX, maxY];
+
+//    console.log("in click", bbox);
+
+    // Construction de l'URL avec la BBOX calculée
+    window.urlbb4 = `https://services.sandre.eaufrance.fr/geo/sandre?language=fre&SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=sa:BassinVersantTopographique_FXX_Topage2024&SRSNAME=urn:ogc:def:crs:EPSG::4326&BBOX=${bbox.join(',')},urn:ogc:def:crs:EPSG:`;
+
+    console.log("urlbb4", urlbb4);
+
+    // Fetch des données
+    fetch(urlbb4)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
         }
+        return response.text();
+    })
+    .then(data => {
+        console.log('GML Response:', data);
+    
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "application/xml");
 
-    }
+        const polygons = xmlDoc.getElementsByTagName('gml:Polygon');
+        console.log('Polygones extraits:', polygons.length);
+    
+        const geojsonFeatures = [];
+    
+        for (let i = 0; i < polygons.length; i++) {
+            const exteriorElement = polygons[i].getElementsByTagNameNS('*', 'exterior')[0]; 
+            if (!exteriorElement) continue;
 
-    // Affichage du polygone intersecté
-    if (intersectedPolygon) {
-        const coordinates = intersectedPolygon.geometry.coordinates;
-        L.geoJSON(intersectedPolygon, {
-            style: {
-                color: 'yellow',
-                fillColor: 'yellow',
-                fillOpacity: 0.5,
-                weight: 2
+            const linearRingElement = exteriorElement.getElementsByTagNameNS('*', 'LinearRing')[0];
+            if (!linearRingElement) continue;
+
+            const posListElement = linearRingElement.getElementsByTagNameNS('*', 'posList')[0];
+            if (!posListElement) continue;
+
+            const linearRings = posListElement.textContent.trim().split(' ');
+    
+            const coords = [];
+            for (let j = 0; j < linearRings.length; j += 2) {
+                const lon = parseFloat(linearRings[j + 1]); // Longitude
+                const lat = parseFloat(linearRings[j]); // Latitude
+                if (!isNaN(lon) && !isNaN(lat)) {
+                    coords.push([lon, lat]);
+                }
             }
-        }).addTo(map);
+    
+            if (coords.length > 0) {
+                geojsonFeatures.push({
+                    type: "Feature",
+                    geometry: {
+                        type: "Polygon",
+                        coordinates: [coords]
+                    },
+                    properties: {}
+                });
+            }
+        }
+    
+        const geojsonObject = {
+            type: "FeatureCollection",
+            features: geojsonFeatures
+        };
+    
+        console.log('GeoJSON avant utilisation:', JSON.stringify(geojsonObject, null, 2));
 
-        window.bbox = calculateBBoxFromGeoJSON(intersectedPolygon);                   //calcul de la bbox
-        console.log("Calculated BBOX:", bbox);
+        if (geojsonObject.features.length > 0) {
+
+            L.geoJSON(geojsonObject, {
+                style: {
+                    color: 'blue',
+                    fillColor: 'blue',
+                    fillOpacity: 0.1,
+                    weight: 0.5 }
+
+
+                }
+        
+        
+        
+        ).addTo(map);
+        }
+    
+        // Début recherche polygone
+        window.intersectedPolygon = null;
+        const point = turf.point([latlng.lng, latlng.lat]);  // Utilisation correcte des coordonnées
+    
+        for (const feature of geojsonObject.features) {
+            const coordinates = feature.geometry.coordinates;
+    
+            if (feature.geometry.type === 'Polygon') {
+                const polygon = turf.polygon(coordinates);
+                if (turf.booleanPointInPolygon(point, polygon)) {
+                    window.intersectedPolygon = feature;
+                    break;
+                }
+            }
+        }
+    
+        if (window.intersectedPolygon) {
+            L.geoJSON(window.intersectedPolygon, {
+                style: {
+                    color: 'yellow',
+                    fillColor: 'yellow',
+                    fillOpacity: 0.5,
+                    weight: 2
+                }
+            }).addTo(map);
+    
+            window.bbox = calculateBBoxFromGeoJSON(window.intersectedPolygon);
+            console.log("Calculated BBOX:", window.bbox);
+            alert('Le point choisi est bien sur un bassin versant topage');
+        } else {
+            alert('Le point choisi n\'est pas sur un BV Topage');
+        }
+    
+        // Affichage du point de clic
+        if (markerbv) {
+            map.removeLayer(markerbv);
+        }
+        window.markerbv = L.marker([latlng.lat, latlng.lng], { icon: greenIcon }).addTo(map);
+    })
+    .catch(error => {
+        console.error('Problème avec la requête fetch:', error);
+    });
+
+} else {   // Démarrer le timer pour le clic simple
+    clickTimeout = setTimeout(function() {
+        // Affichage de l'info-bulle
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent("Information sur le polygone")
+            .openOn(map);
+
+        clickTimeout = null;
+    }, doubleClickDelay);
+}
+
+});//fin onclick
 
 
 
 
-
-        alert('le point choisi est bien sur un bassin versant topage');
-    } else {
-        alert('Les point choisi n est pas sur un BV Topage');
-    }
-
-
-
-
-
-
-
-
-
-                   // sendPostRequest(coords,map);
-                   //si il y avait déjà un point BV on l'enlève pour qu'il n'y en ait qu'un
-                    if (markerbv) {
-                        map.removeLayer(markerbv);
-                    }
-                    markerbv = L.marker([latlng.lat, latlng.lng], { icon: greenIcon }).addTo(map);   //on rajoute la couche recalculée à chaque fois même si et c'est improbable
-                    //le clic était le même 
-                }        
-            );
             map.on('zoomend', function() {
                     var zoomLevel = map.getZoom();
                     document.getElementById('zoom-level').textContent = "Le niveau de zoom est de " + zoomLevel + ". Le niveau conseillé pour choisir un point est de 13 au moins.";
