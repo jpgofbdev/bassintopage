@@ -16,6 +16,14 @@
 </style>
 
 </head>
+
+<script>
+    function showInstallInstructions() {
+      alert("Pour ajouter cette application à l'écran d'accueil :\n\n• Sur Android (Chrome) : menu ⋮ puis 'Ajouter à l'écran d'accueil'.\n• Sur iPhone (Safari) : bouton partager → 'Sur l’écran d’accueil'.");
+    }
+  </script>
+  
+
 <body>
     <div id="header" style="height: 50px; display: flex; align-items: center; justify-content: center;">
        <!-- <img src="logo.jpg" alt="Logo OFB" style="height: 100%; margin-right: 10px;"> <!-- Logo OFB à gauche --> 
@@ -25,10 +33,13 @@
             <span class="small-italic">Outil Bassin Versant pour les Inspecteurs de l'Environnement</span>
           </h1>
         </div>
-<!--        <div class="right-text" style="margin-left: auto;">produit par la DR CVL</div>   -->
+       <!--  <div class="right-text" style="margin-left: auto;">produit par la DR CVL</div> Aligné à droite -->
         <div class="icons" style="margin-left: 10px;">
           <a href="./modedemploi.html" title="Mode d'emploi">&#x1F4D6;</a>
           <a href="./information.html" title="Informations">&#x2139;</a>
+          <a href="#" onclick="showInstallInstructions()" title="Ajouter à l'accueil">&#x1F4F1;</a>
+
+
         </div>
       </div>
       
@@ -71,7 +82,7 @@
         </div>
 
     </div>
-    <button id="toggle-controls">Choix des couches</button>
+     
     
 
 
@@ -82,9 +93,9 @@
         <input type="checkbox" id="bboxbvorange-checkbox">
         Afficher BBOX
     </label>
-    <div id="zoom-level">Pour commencer double-cliquer sur le plan au point recherché</div>
+    <div id="zoom-level">Double cliquer pour déterminer un bassin versant  </div>
 
-
+    <button id="toggle-controls" style="display: none;">Déplier choix des couches à afficher</button>
 
 <!--  SCRIPT MODULES
     ////////////////////////////////////////////////////////////////////// -->
@@ -97,7 +108,7 @@
     <!-- <script src="./main_loc2_nofile.js"></script> -->
     <script src="./event.js"></script>
 
-    <script type="module" src="main.js"></script>
+    <script type="module" src="./mainoct.js"></script>
     <script>
 
 
@@ -110,9 +121,9 @@
 
             // Mettre à jour le texte du bouton
             if (controlsContainer.classList.contains('show')) {
-                this.textContent = 'Couches/on';
+                this.textContent = 'Replier choix des couches à afficher';
             } else {
-                this.textContent = 'Couches/off';
+                this.textContent = 'Déplier choix des couches à afficher';
             }
         });
     </script>

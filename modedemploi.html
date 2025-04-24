@@ -1,50 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mode d'emploi</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        p {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #555;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Mode d'emploi</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f9ff;
+      color: #333;
+      line-height: 1.6;
+      padding: 2em;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2a7ae2;
+      margin-bottom: 1em;
+    }
+
+    ul {
+      padding-left: 1.2em;
+    }
+
+    li {
+      margin: 0.5em 0;
+    }
+
+    .emoji {
+      font-size: 1.2em;
+      margin-right: 0.4em;
+    }
+
+    .note {
+      font-size: 0.9em;
+      color: #555;
+      margin-top: 2em;
+      border-top: 1px solid #ddd;
+      padding-top: 1em;
+    }
+
+    a {
+      color: #2a7ae2;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Mode d'emploi</h1>
-        <p>
-L'outil bassin versant propose un accès direct à la détermination d'un bassin versant en tout point du territoire métropolitain. 
-            Le double clic (ou contact sur mobile) sur la carte déclenche la détermination du bassin versant topage sous-jacent. Il est possible d'ajouter 
-           <br> -la couche des établissements pollueurs 
-            <br>-la couche des stations d'épurations
-            <br>-les cours d'eau BDTopage
-            <br>-les ICPE
-  <br>Le clic ou simple touche sur un point ouvre une info-bulle qui permet de consulter les informations de l'installation.
-          
-        </p>
-    </div>
-
+  <div class="container">
+    <h1>📘 Mode d'emploi</h1>
+    <p>
+      L'outil bassin versant propose un accès direct à la détermination d'un bassin versant et de certaines installations en tout point du territoire métropolitain.
+    </p>
+    <p>
+      Pour commencer <span class="emoji">👉</span><strong>double-cliquez</strong> (ou touchez sur mobile) sur la carte pour déclencher la détermination du bassin versant topage sous-jacent.
+      Vous pouvez ensuite activer d'autres couches via le menu <em>« Déplier choix des couches »</em> :
+    </p>
+    <ul>
+        <li>🏭 Couche des établissements pollueurs <span class="note">(source : <a href="https://georisques.gouv.fr">georisques.gouv.fr</a>)</span></li>
+        <li>🧪 Stations d'épuration <span class="note">(source : <a href="https://services.sandre.eaufrance.fr">sandre.eaufrance.fr</a>)</span></li>
+        <li>🏞️ Cours d'eau BD Topage <span class="note">(source : <a href="https://services.sandre.eaufrance.fr">sandre.eaufrance.fr</a>)</span></li>
+        <li>⚠️ ICPE <span class="note">(source : <a href="https://georisques.gouv.fr">georisques.gouv.fr</a>)</span></li>
+      </ul>
+      
+    <p>
+      📍 Un simple clic (ou touche) sur un point ouvre une info-bulle permettant de consulter les informations de l'installation.
+    </p>
+    <div class="note">
+        ℹ️ Pour en savoir plus sur l'application, <a href="./information.html">cliquez ici</a>.
+      </div>
+    <a href="index.html" class="back-link">⬅️ Retour à l'application</a>
+  </div>
 </body>
 </html>
