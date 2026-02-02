@@ -24,8 +24,10 @@ jobs:
         run: |
           mkdir -p data
           ogr2ogr -f GeoJSON data/etablissements_pollueurs.geojson \
-            "WFS:https://georisques.gouv.fr/services?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ETABLISSEMENTS_POLLUEURS&outputFormat=application/json; subtype=geojson; charset=utf-8"
-
+            --config OGR_WFS_PAGING_ALLOWED YES \
+            --config OGR_WFS_PAGE_SIZE 5000 \
+            "WFS:https://georisques.gouv.fr/services?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ETABLISSEMENTS_POLLUEURS"
+            
       - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
