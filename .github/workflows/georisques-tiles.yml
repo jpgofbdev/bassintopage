@@ -1,0 +1,65 @@
+name: Update Georisques pollueurs tiles
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"   # tous les lundis à 03:17 UTC
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GDAL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin
+
+      - name: Fetch WFS and build tiles
+        run: |
+          set -e
+
+          mkdir -p data/pollueurs_tiles
+          touch data/pollueurs_tiles/.keep
+
+          echo "Téléchargement du WFS Georisques..."
+          ogr2ogr -f GPKG /tmp/pollueurs.gpkg \
+            --config OGR_WFS_PAGING_ALLOWED YES \
+            --config OGR_WFS_PAGE_SIZE 5000 \
+            "WFS:https://georisques.gouv.fr/services?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ETABLISSEMENTS_POLLUEURS"
+
+          echo "Découpage en tuiles 1°x1° (France)..."
+          # emprise France métropolitaine approx.
+          for lon in $(seq -6 10); do
+            for lat in $(seq 41 52); do
+              out="data/pollueurs_tiles/tile_${lon}_${lat}.geojson"
+
+              ogr2ogr -f GeoJSON "$out" /tmp/pollueurs.gpkg \
+                -spat $lon $lat $((lon+1)) $((lat+1)) \
+                -skipfailures
+
+              # supprimer les fichiers vides
+              if [ ! -s "$out" ]; then
+                rm -f "$out"
+              fi
+            done
+          done
+
+          echo "Résumé des tuiles produites :"
+          find data/pollueurs_tiles -name "*.geojson" | wc -l
+          ls -lah data/pollueurs_tiles | head
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add data/pollueurs_tiles
+          git diff --cached --quiet || git commit -m "Update pollueurs tiles"
+          git push
