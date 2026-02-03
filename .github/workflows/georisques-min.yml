@@ -20,13 +20,36 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gdal-bin
 
-      - name: Fetch WFS -> GeoJSON
+            - name: Fetch WFS (full) -> tiles GeoJSON
         run: |
-          mkdir -p data
-          ogr2ogr -f GeoJSON data/etablissements_pollueurs.geojson \
+          mkdir -p data/pollueurs_tiles
+
+          # 1) On télécharge le WFS en GML via GDAL (robuste)
+          ogr2ogr -f GPKG /tmp/pollueurs.gpkg \
             --config OGR_WFS_PAGING_ALLOWED YES \
             --config OGR_WFS_PAGE_SIZE 5000 \
             "WFS:https://georisques.gouv.fr/services?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:ETABLISSEMENTS_POLLUEURS"
+
+          # 2) Découpage en tuiles 1°x1° sur une emprise France (ajuste si besoin)
+          #    lon: -6..10 / lat: 41..52
+          for lon in $(seq -6 10); do
+            for lat in $(seq 41 52); do
+              minLon=$lon
+              minLat=$lat
+              maxLon=$((lon+1))
+              maxLat=$((lat+1))
+
+              out="data/pollueurs_tiles/tile_${lon}_${lat}.geojson"
+
+              ogr2ogr -f GeoJSON "$out" /tmp/pollueurs.gpkg \
+                -spat $minLon $minLat $maxLon $maxLat \
+                -skipfailures
+
+              # si fichier quasi vide, on le supprime
+              if [ ! -s "$out" ]; then rm -f "$out"; fi
+            done
+          done
+
             
       - name: Commit & push if changed
         run: |
