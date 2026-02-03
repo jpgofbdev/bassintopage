@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "ms:ETABLISSEMENTS_POLLUEURS",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.597172", "identifiant": "0009076601", "idetab": "597172", "nom": "CC DES ALBERES, DE LA COTE VERMEILLE ET DE L'ILLIBERIS", "codeape": "8411Z", "cp": "66700" }, "geometry": { "type": "Point", "coordinates": [ 3.03388, 42.54748 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.598538", "identifiant": "0006602274", "idetab": "598538", "nom": "SYND DEP TRANSPORT TRAITEMENT VALORISATION ORDURES MENAGERES AUTRES DECHETS A L ECHELLE DU DEP", "codeape": "3821Z", "cp": "66700" }, "geometry": { "type": "Point", "coordinates": [ 3.02805, 42.55621 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.13119", "identifiant": "0006602535", "idetab": "13119", "nom": "ETS SABATIE", "codeape": "4511Z", "cp": "66140" }, "geometry": { "type": "Point", "coordinates": [ 3.00824, 42.704934 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.599349", "identifiant": "0006603016", "idetab": "599349", "nom": "DECHETERIE DE TORREILLES", "codeape": "3811Z", "cp": "66440" }, "geometry": { "type": "Point", "coordinates": [ 3.00895, 42.73963 ] } }
+]
+}

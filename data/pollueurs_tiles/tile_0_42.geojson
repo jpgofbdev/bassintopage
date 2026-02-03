@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "ms:ETABLISSEMENTS_POLLUEURS",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.589129", "identifiant": "0006811510", "idetab": "589129", "nom": "COMMUNAUTÉ DE COMMUNE PYRÉNÉES VALLÉES D", "codeape": "8411Z", "cp": "65120" }, "geometry": { "type": "Point", "coordinates": [ 0.022252, 42.878774 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.5190", "identifiant": "0006802516", "idetab": "5190", "nom": "IMERYS BEYREDE", "codeape": "2391Z", "cp": "65410" }, "geometry": { "type": "Point", "coordinates": [ 0.31997, 42.96519 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.589071", "identifiant": "0006804068", "idetab": "589071", "nom": "SOC DES EAUX MINERALES DE LUCHON", "codeape": "1107A", "cp": "31110" }, "geometry": { "type": "Point", "coordinates": [ 0.59884, 42.80672 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.597375", "identifiant": "0006804025", "idetab": "597375", "nom": "DRAGAGES DU PONT DE LESCAR", "codeape": "0812Z", "cp": "65370" }, "geometry": { "type": "Point", "coordinates": [ 0.64372, 42.95995 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.13611", "identifiant": "0006801182", "idetab": "13611", "nom": "DRAGAGES DU PONT DE LESCAR", "codeape": "0812Z", "cp": "65370" }, "geometry": { "type": "Point", "coordinates": [ 0.64532, 42.96097 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.5195", "identifiant": "0006802551", "idetab": "5195", "nom": "USINE DE MARIGNAC", "codeape": "2014Z", "cp": "31440" }, "geometry": { "type": "Point", "coordinates": [ 0.65902, 42.910381 ] } }
+]
+}

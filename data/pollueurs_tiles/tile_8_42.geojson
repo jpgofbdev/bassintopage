@@ -1,0 +1,12 @@
+{
+"type": "FeatureCollection",
+"name": "ms:ETABLISSEMENTS_POLLUEURS",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.589900", "identifiant": "0007300035", "idetab": "589900", "nom": "SABLIERE DE BALAGNE", "codeape": "0812Z", "cp": "20214" }, "geometry": { "type": "Point", "coordinates": [ 8.76413, 42.5054 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.13295", "identifiant": "0007300220", "idetab": "13295", "nom": "SYNDICAT MIXTE POUR LA VALORISATION DES DECHETS DE CORSE", "codeape": "3821Z", "cp": "20160" }, "geometry": { "type": "Point", "coordinates": [ 8.66707, 42.10866 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.13755", "identifiant": "0009000249", "idetab": "13755", "nom": "2ÈME REP", "codeape": "8422Z", "cp": "20260" }, "geometry": { "type": "Point", "coordinates": [ 8.78975, 42.55347 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.13438", "identifiant": "0020100018", "idetab": "13438", "nom": "OCCA PIECES", "codeape": "4520A", "cp": "20167" }, "geometry": { "type": "Point", "coordinates": [ 8.83471, 42.00141 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.598649", "identifiant": "0020800063", "idetab": "598649", "nom": "CASSE DE CALENZANA", "codeape": "4532Z", "cp": "20214" }, "geometry": { "type": "Point", "coordinates": [ 8.81727, 42.53499 ] } }
+]
+}

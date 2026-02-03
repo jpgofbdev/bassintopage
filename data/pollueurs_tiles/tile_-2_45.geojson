@@ -1,0 +1,15 @@
+{
+"type": "FeatureCollection",
+"name": "ms:ETABLISSEMENTS_POLLUEURS",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.12460", "identifiant": "0007207872", "idetab": "12460", "nom": "C.C. DE L'ILE D'OLERON - ECOPOLE DE L'ILE D'OLERON", "codeape": "3821Z", "cp": "17550" }, "geometry": { "type": "Point", "coordinates": [ -1.264964, 45.910596 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.5350", "identifiant": "0007201518", "idetab": "5350", "nom": "UIOM D'OLERON", "codeape": "3821Z", "cp": "17310" }, "geometry": { "type": "Point", "coordinates": [ -1.313039, 45.94084 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.8490", "identifiant": "0005206706", "idetab": "8490", "nom": "MAIRIE - SOULAC (DÉCHARGE)", "codeape": "751A", "cp": "33780" }, "geometry": { "type": "Point", "coordinates": [ -1.120292, 45.513596 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.596336", "identifiant": "0005203826", "idetab": "596336", "nom": "COLAS FRANCE", "codeape": "0812Z", "cp": "33340" }, "geometry": { "type": "Point", "coordinates": [ -1.03254, 45.36611 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.10225", "identifiant": "0007201369", "idetab": "10225", "nom": "OLERON STP", "codeape": "2030Z", "cp": "17320" }, "geometry": { "type": "Point", "coordinates": [ -1.10804, 45.81326 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.9255", "identifiant": "0007206809", "idetab": "9255", "nom": "ETABLISSEMENT PROUST", "codeape": "4677Z", "cp": "17640" }, "geometry": { "type": "Point", "coordinates": [ -1.063378, 45.648047 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.10241", "identifiant": "0007206918", "idetab": "10241", "nom": "BURG VINAIGRES", "codeape": "1084Z", "cp": "17390" }, "geometry": { "type": "Point", "coordinates": [ -1.1274, 45.76025 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.589197", "identifiant": "0007208242", "idetab": "589197", "nom": "CANYON'S 4X4", "codeape": "4520A", "cp": "17200" }, "geometry": { "type": "Point", "coordinates": [ -1.010765, 45.671946 ] } }
+]
+}

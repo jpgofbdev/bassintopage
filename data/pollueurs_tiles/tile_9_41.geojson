@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "ms:ETABLISSEMENTS_POLLUEURS",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.591634", "identifiant": "0007300023", "idetab": "591634", "nom": "A. SAULI ET CIE", "codeape": "2363Z", "cp": "20146" }, "geometry": { "type": "Point", "coordinates": [ 9.15904, 41.5557 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.591633", "identifiant": "0007300019", "idetab": "591633", "nom": "AGREGATS SUD CORSE", "codeape": "2363Z", "cp": "20137" }, "geometry": { "type": "Point", "coordinates": [ 9.24489, 41.48606 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.595048", "identifiant": "0007300556", "idetab": "595048", "nom": "STOC", "codeape": "3821Z", "cp": "20243" }, "geometry": { "type": "Point", "coordinates": [ 9.39273, 41.99666 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.7118", "identifiant": "0009000025", "idetab": "7118", "nom": "BASE AÉRIENNE 126 VENTISERI SOLENZARA", "codeape": "8422Z", "cp": "20240" }, "geometry": { "type": "Point", "coordinates": [ 9.390976, 41.908916 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.7161", "identifiant": "0009000078", "idetab": "7161", "nom": "DEA SOLENZARA", "codeape": "8422Z", "cp": "20223" }, "geometry": { "type": "Point", "coordinates": [ 9.36264, 41.94096 ] } },
+{ "type": "Feature", "properties": { "gml_id": "ETABLISSEMENTS_POLLUEURS.592690", "identifiant": "0009000235", "idetab": "592690", "nom": "DÉPÔT DE MUNITIONS DE VENTISERI-SOLENZARA", "codeape": "8422Z", "cp": "20240" }, "geometry": { "type": "Point", "coordinates": [ 9.3862, 41.927 ] } }
+]
+}
