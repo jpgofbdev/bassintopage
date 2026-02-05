@@ -405,30 +405,49 @@ function parseWFSData(data) {
 
 // Parser ICPE (API georisques)
 function parseInstallationsData(data) {
-  var markers = [];
+  const markers = [];
   const installations = data?.data || [];
 
-  installations.forEach((installation) => {
-    const lat = installation?.adresse?.coordonnees?.lat;
-    const lon = installation?.adresse?.coordonnees?.lon;
-    if (!lat || !lon) return;
+  if (!Array.isArray(installations)) {
+    console.warn("[ICPE] data.data n'est pas un tableau :", data);
+    return markers;
+  }
 
-    const coordsicpe = [lat, lon];
+  installations.forEach((installation) => {
+    const lat = Number(installation.latitude);
+    const lon = Number(installation.longitude);
+
+    // garde-fou : si coordonnées absentes, on saute
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
 
     const popupContent = `
-        <strong>${installation.raison_sociale || "Sans nom"}</strong><br>
-        <strong>Adresse:</strong> ${installation.adresse?.libelle || "Non disponible"}<br>
-        <strong>Activité:</strong> ${installation.activite_principale || "Non disponible"}<br>
-        <strong>Code NAF:</strong> ${installation.code_naf || "Non disponible"}<br>
-        <strong>Date de mise à jour:</strong> ${installation.date_maj || "Non disponible"}<br>
-      `;
+      <strong>Raison Sociale:</strong> ${installation.raisonSociale || 'Non disponible'}<br>
+      <strong>Adresse 1:</strong> ${installation.adresse1 || 'Non disponible'}<br>
+      <strong>Adresse 2:</strong> ${installation.adresse2 || 'Non disponible'}<br>
+      <strong>Code Postal:</strong> ${installation.codePostal || 'Non disponible'}<br>
+      <strong>Commune:</strong> ${installation.commune || 'Non disponible'}<br>
+      <strong>Code Insee:</strong> ${installation.codeInsee || 'Non disponible'}<br>
+      <strong>Code NAF:</strong> ${installation.codeNaf || 'Non disponible'}<br>
+      <strong>SIRET:</strong> ${installation.siret || 'Non disponible'}<br>
+      <strong>Priorité Nationale:</strong> ${installation.prioriteNationale ? 'Oui' : 'Non'}<br>
+      <strong>Régime:</strong> ${installation.regime || 'Non disponible'}<br>
+      <strong>Service AIOT:</strong> ${installation.serviceAIOT || 'Non disponible'}<br>
+      <strong>Inspections:</strong> ${
+        Array.isArray(installation.inspections) && installation.inspections.length > 0
+          ? installation.inspections.map(i => `Date: ${i.dateInspection}`).join(', ')
+          : 'Aucune'
+      }<br>
+      <strong>Date de mise à jour:</strong> ${installation.date_maj || 'Non disponible'}<br>
+    `;
 
-    var marker = L.marker(coordsicpe, { icon: redIcon }).bindPopup(popupContent);
+    // Leaflet attend [lat, lon]
+    const marker = L.marker([lat, lon], { icon: redIcon }).bindPopup(popupContent);
     markers.push(marker);
   });
 
   return markers;
 }
+
 
 // Ajout simple de GML lignes (LineString) à la carte (cours d'eau, etc.)
 function addGMLToMap(gmlText) {
@@ -460,5 +479,6 @@ function addGMLToMap(gmlText) {
     console.error("[GML] addGMLToMap error:", e);
   }
 }
+
 
 
