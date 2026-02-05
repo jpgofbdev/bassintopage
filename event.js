@@ -1,3 +1,6 @@
+console.log("event.js VERSION TUILES LOCALES – 2026-02-05");
+
+
 // ====== POLLUEURS : chargement via tuiles locales (GitHub Pages) ======
 
 // IMPORTANT : adapte si ton repo/pages n'est pas "bassintopage"
@@ -83,3 +86,4 @@ document.getElementById("pollueurs-checkbox").addEventListener("change", async f
     console.error("Error fetching pollueurs from local tiles:", error);
   }
 });
+
