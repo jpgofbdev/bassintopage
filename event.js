@@ -85,10 +85,7 @@ var blackIcon = makeColoredIcon("black");
 // STEP markers
 var markersstep = [];
 
-/* ============================================================
-   1) STEP (SANDRE ODP) — sa:SysTraitementEauxUsees (GML)
-   ============================================================ */
-
+// ====== STEP (SANDRE ODP) — sa:SysTraitementEauxUsees (GML) ======
 safeOnChange("step-checkbox", function (event) {
   const baseURL2 = "https://services.sandre.eaufrance.fr/geo/odp";
 
@@ -99,44 +96,96 @@ safeOnChange("step-checkbox", function (event) {
 
   console.log("[STEP] URL:", urlbb2);
 
-  // Si décoché : nettoyage simple (si tu utilises une layerGroup ailleurs, adapte)
+  // si décoché : on nettoie
   if (!event.target.checked) {
-    markersstep.forEach((m) => {
-      try { map.removeLayer(m); } catch (e) {}
-    });
+    stepLayer.clearLayers();
     markersstep = [];
     return;
   }
 
-  fetchText(urlbb2)
+  fetch(urlbb2)
+    .then((response) => {
+      if (!response.ok) throw new Error("Erreur réseau : " + response.statusText);
+      return response.text();
+    })
     .then((data) => {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(data, "text/xml");
       const features = xmlDoc.getElementsByTagName("sa:SysTraitementEauxUsees");
 
       markersstep = [];
+      stepLayer.clearLayers();
 
       Array.from(features).forEach((feature) => {
-        const coordElement = feature.getElementsByTagName("gml:pos")[0];
-        if (!coordElement) return;
+        const lat = parseFloat(feature.getElementsByTagName("sa:LatWGS84OuvrageDepollution")[0]?.textContent);
+        const lon = parseFloat(feature.getElementsByTagName("sa:LongWGS84OuvrageDepollution")[0]?.textContent);
 
-        const coords = coordElement.textContent.trim().split(/\s+/).map(Number);
-        if (coords.length !== 2) return;
+        const nom = feature.getElementsByTagName("sa:NomOuvrageDepollution")[0]?.textContent || "Nom non disponible";
+        const type = feature.getElementsByTagName("sa:MnNatureSystTraitementEauxUsees")[0]?.textContent || "Type non disponible";
+        const capacite = feature.getElementsByTagName("sa:CapaciteNom")[0]?.textContent || "Capacité non disponible";
+        const commune = feature.getElementsByTagName("sa:LbCommune")[0]?.textContent || "Commune non disponible";
 
-        const lat = coords[0];
-        const lon = coords[1];
+        const dateMiseService =
+          feature.getElementsByTagName("sa:DateMiseServiceOuvrageDepollution")[0]
+            ?.getElementsByTagName("gml:timePosition")[0]?.textContent || "Date non disponible";
 
-        // popup simple
-        const nom = feature.getElementsByTagName("sa:NomInstallation")[0]?.textContent || "STEP";
-        const marker = L.marker([lat, lon], { icon: orangeIcon }).bindPopup(nom);
-        markersstep.push(marker);
+        const cdOuvrage = feature.getElementsByTagName("sa:CdOuvrageDepollution")[0]?.textContent || "Code non disponible";
+        const lbTypeOuvrage = feature.getElementsByTagName("sa:LbTypeOuvrageDepollution")[0]?.textContent || "Libellé Type Ouvrage non disponible";
+        const lbNatureSyst = feature.getElementsByTagName("sa:LbNatureSystTraitementEauxUsees")[0]?.textContent || "Libellé Nature Système non disponible";
+        const lbExistAutosurv = feature.getElementsByTagName("sa:LbExistAutosurv")[0]?.textContent || "Existence Autosurveillance non disponible";
+        const lbConformiteAutosurv = feature.getElementsByTagName("sa:LbConformiteAutosurveillance")[0]?.textContent || "Conformité Autosurveillance non disponible";
+
+        const dateMAJSTEU =
+          feature.getElementsByTagName("sa:DateMAJSTEU")[0]
+            ?.getElementsByTagName("gml:timePosition")[0]?.textContent || "Date MAJ non disponible";
+
+        const lbSystemeCollecte = feature.getElementsByTagName("sa:LbSystemeCollecte")[0]?.textContent || "Système Collecte non disponible";
+        const nomAgglomeration = feature.getElementsByTagName("sa:NomAgglomerationAssainissement")[0]?.textContent || "Agglomération non disponible";
+        const cdCommune = feature.getElementsByTagName("sa:CdCommune")[0]?.textContent || "Code Commune non disponible";
+        const nomZS = feature.getElementsByTagName("sa:NomZS")[0]?.textContent || "Zone Sensible non disponible";
+        const nomCircAdminBassin = feature.getElementsByTagName("sa:NomCircAdminBassin")[0]?.textContent || "Circonscription Administratif non disponible";
+        const lbOuvrageRejet = feature.getElementsByTagName("sa:LbOuvrageRejet")[0]?.textContent || "Ouvrage Rejet non disponible";
+        const cdEuMasseDEau = feature.getElementsByTagName("sa:CdEuMasseDEau")[0]?.textContent || "Code EU Masse d'Eau non disponible";
+        const latOuvrageRejet = feature.getElementsByTagName("sa:LatWGS84OuvrageRejet")[0]?.textContent || "Latitude Ouvrage Rejet non disponible";
+        const lonOuvrageRejet = feature.getElementsByTagName("sa:LonWGS84OuvrageRejet")[0]?.textContent || "Longitude Ouvrage Rejet non disponible";
+        const nomMasseDEau = feature.getElementsByTagName("sa:NomMasseDEau")[0]?.textContent || "Nom Masse d'Eau non disponible";
+
+        const info = `
+          <strong>Nom :</strong> ${nom}<br>
+          <strong>Type :</strong> ${type}<br>
+          <strong>Capacité :</strong> ${capacite}<br>
+          <strong>Commune :</strong> ${commune}<br>
+          <strong>Date de mise en service :</strong> ${dateMiseService}<br>
+          <strong>Code Ouvrage :</strong> ${cdOuvrage}<br>
+          <strong>Libellé Type Ouvrage :</strong> ${lbTypeOuvrage}<br>
+          <strong>Libellé Nature Système :</strong> ${lbNatureSyst}<br>
+          <strong>Existence Autosurveillance :</strong> ${lbExistAutosurv}<br>
+          <strong>Conformité Autosurveillance :</strong> ${lbConformiteAutosurv}<br>
+          <strong>Date MAJ :</strong> ${dateMAJSTEU}<br>
+          <strong>Système Collecte :</strong> ${lbSystemeCollecte}<br>
+          <strong>Agglomération :</strong> ${nomAgglomeration}<br>
+          <strong>Code Commune :</strong> ${cdCommune}<br>
+          <strong>Nom Zone Sensible :</strong> ${nomZS}<br>
+          <strong>Circonscription Administratif :</strong> ${nomCircAdminBassin}<br>
+          <strong>Ouvrage Rejet :</strong> ${lbOuvrageRejet}<br>
+          <strong>Code EU Masse d'Eau :</strong> ${cdEuMasseDEau}<br>
+          <strong>Latitude Ouvrage Rejet :</strong> ${latOuvrageRejet}<br>
+          <strong>Longitude Ouvrage Rejet :</strong> ${lonOuvrageRejet}<br>
+          <strong>Nom Masse d'Eau :</strong> ${nomMasseDEau}
+        `;
+
+        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+          const marker = L.marker([lat, lon], { icon: orangeIcon }).bindPopup(info);
+          markersstep.push(marker);
+        }
       });
 
-      markersstep.forEach((m) => m.addTo(map));
+      markersstep.forEach((m) => m.addTo(stepLayer));
       console.log("[STEP] markers:", markersstep.length);
     })
     .catch((error) => console.error("[STEP] Error:", error));
 });
+
 
 /* ============================================================
    2) BBOX BV ORANGE — code historique conservé
@@ -479,6 +528,7 @@ function addGMLToMap(gmlText) {
     console.error("[GML] addGMLToMap error:", e);
   }
 }
+
 
 
 
