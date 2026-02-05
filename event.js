@@ -16,13 +16,11 @@ function $(id) {
 }
 
 function safeOnChange(id, handler) {
-  const el = $(id);
-  if (!el) {
-    console.warn(`[event.js] Élément #${id} introuvable (listener non attaché).`);
-    return;
-  }
+  const el = document.getElementById(id);
+  if (!el) return; // silencieux
   el.addEventListener("change", handler);
 }
+
 
 function fetchJson(url) {
   return fetch(url).then((r) => {
@@ -528,6 +526,7 @@ function addGMLToMap(gmlText) {
     console.error("[GML] addGMLToMap error:", e);
   }
 }
+
 
 
 
