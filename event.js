@@ -290,27 +290,30 @@ safeOnChange("icpe-checkbox", function (event) {
 
   fetchJson(urlicpe)
     .then((data) => {
-  const markers = parseInstallationsData(data);
-  console.log("[ICPE] markers créés:", markers.length);
+      const markers = parseInstallationsData(data);
+      console.log("[ICPE] markers créés:", markers.length);
 
-  // Assure que la couche est visible si elle existe
-  if (typeof icpeLayer !== "undefined" && icpeLayer) {
-    if (!map.hasLayer(icpeLayer)) {
-      icpeLayer.addTo(map);
-    }
-    icpeLayer.clearLayers();
-    markers.forEach(m => m.addTo(icpeLayer));
-  } else {
-    // fallback : ajout direct à la carte
-    markers.forEach(m => m.addTo(map));
-  }
+      // Assure que la couche est visible si elle existe
+      if (typeof icpeLayer !== "undefined" && icpeLayer) {
+        if (!map.hasLayer(icpeLayer)) {
+          icpeLayer.addTo(map);
+        }
+        icpeLayer.clearLayers();
+        markers.forEach(m => m.addTo(icpeLayer));
+      } else {
+        // fallback : ajout direct à la carte
+        markers.forEach(m => m.addTo(map));
+      }
 
-  // Debug rapide : zoom sur les points si au moins 1 marker
-  if (markers.length > 0) {
-    const group = L.featureGroup(markers);
-    map.fitBounds(group.getBounds().pad(0.2));
-  }
-})
+      // Debug rapide : zoom sur les points si au moins 1 marker
+      if (markers.length > 0) {
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.2));
+      }
+    })
+    .catch((error) => console.error("[ICPE] Error:", error));
+});
+
 
 /* ============================================================
    5) AAC / PPR — fichiers locaux (CVL)
@@ -457,4 +460,5 @@ function addGMLToMap(gmlText) {
     console.error("[GML] addGMLToMap error:", e);
   }
 }
+
 
