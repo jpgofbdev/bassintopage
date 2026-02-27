@@ -36,7 +36,7 @@ function fetchText(url) {
   });
 }
 
-// Normalise une bbox vers [minLon, minLat, maxLon, maxLat]
+// Normalise une window.bbox vers [minLon, minLat, maxLon, maxLat]
 function normalizeBBoxLonLat(bboxRaw) {
   const a0 = bboxRaw?.[0], a1 = bboxRaw?.[1], a2 = bboxRaw?.[2], a3 = bboxRaw?.[3];
 
@@ -90,7 +90,7 @@ safeOnChange("step-checkbox", function (event) {
   const urlbb2 =
     `${baseURL2}?language=fre&SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0` +
     `&TYPENAMES=sa:SysTraitementEauxUsees&COUNT=80000&SRSNAME=urn:ogc:def:crs:EPSG::4326` +
-    `&BBOX=${bboxToWfsBBOXParam_LatLon(bbox)}`;
+    `&BBOX=${bboxToWfsBBOXParam_LatLon(window.bbox)}`;
 
   console.log("[STEP] URL:", urlbb2);
 
@@ -193,20 +193,20 @@ safeOnChange("bboxbvorange-checkbox", function () {
   console.log("Checkbox changed, checked:", this.checked);
 
   if (this.checked) {
-    if (typeof intersectedPolygon !== "undefined" && intersectedPolygon) {
-      console.log("BBOX (checkbox change):", bbox);
+    if (typeof window.intersectedPolygon !== "undefined" && window.intersectedPolygon) {
+      console.log("BBOX (checkbox change):", window.bbox);
 
-      if (bbox) {
+      if (window.bbox) {
         var bboxPolygon = {
           type: "Feature",
           geometry: {
             type: "Polygon",
             coordinates: [[
-              [bbox[0], bbox[1]],
-              [bbox[2], bbox[1]],
-              [bbox[2], bbox[3]],
-              [bbox[0], bbox[3]],
-              [bbox[0], bbox[1]],
+              [window.bbox[0], window.bbox[1]],
+              [window.bbox[2], window.bbox[1]],
+              [window.bbox[2], window.bbox[3]],
+              [window.bbox[0], window.bbox[3]],
+              [window.bbox[0], window.bbox[1]],
             ]],
           },
         };
@@ -217,18 +217,18 @@ safeOnChange("bboxbvorange-checkbox", function () {
             fillColor: "orange",
             fillOpacity: 0.5,
           },
-        }).addTo(map);
+        }).addTo(window.map);
       }
     } else {
-      console.log("No bbox to display, intersectedPolygon is null/undefined.");
+      console.log("No window.bbox to display, window.intersectedPolygon is null/undefined.");
     }
   } else {
-    map.eachLayer(function (layer) {
+    window.map.eachLayer(function (layer) {
       if (layer.feature && layer.feature.geometry && layer.feature.geometry.type === "Polygon") {
-        map.removeLayer(layer);
+        window.map.removeLayer(layer);
       }
     });
-    console.log("BBOX removed from the map.");
+    console.log("BBOX removed from the window.map.");
   }
 });
 
@@ -268,7 +268,7 @@ async function fetchPollueursFromLocalTiles(bboxRaw) {
     .filter((p) => p && Array.isArray(p.features))
     .flatMap((p) => p.features);
 
-  // filtre fin bbox (utile car tu charge une tuile 1°x1°)
+  // filtre fin window.bbox (utile car tu charge une tuile 1°x1°)
   const [minLon, minLat, maxLon, maxLat] = bboxLonLat;
   features = features.filter((f) => {
     if (!f || !f.geometry) return false;
@@ -296,8 +296,8 @@ safeOnChange("pollueurs-checkbox", async function (event) {
   }
 
   try {
-    console.log("[POLLUEURS] bbox brute:", bbox);
-    const data = await fetchPollueursFromLocalTiles(bbox);
+    console.log("[POLLUEURS] window.bbox brute:", window.bbox);
+    const data = await fetchPollueursFromLocalTiles(window.bbox);
     console.log("[POLLUEURS] features:", data.features.length);
 
     var markerspoll = parseWFSData(data);
@@ -307,7 +307,7 @@ safeOnChange("pollueurs-checkbox", async function (event) {
       pollutionLayer.clearLayers();
       markerspoll.forEach((marker) => marker.addTo(pollutionLayer));
     } else {
-      markerspoll.forEach((marker) => marker.addTo(map));
+      markerspoll.forEach((marker) => marker.addTo(window.map));
     }
   } catch (error) {
     console.error("Error fetching pollueurs from local tiles:", error);
@@ -342,20 +342,20 @@ safeOnChange("icpe-checkbox", function (event) {
 
       // Assure que la couche est visible si elle existe
       if (typeof icpeLayer !== "undefined" && icpeLayer) {
-        if (!map.hasLayer(icpeLayer)) {
-          icpeLayer.addTo(map);
+        if (!window.map.hasLayer(icpeLayer)) {
+          icpeLayer.addTo(window.map);
         }
         icpeLayer.clearLayers();
         markers.forEach(m => m.addTo(icpeLayer));
       } else {
         // fallback : ajout direct à la carte
-        markers.forEach(m => m.addTo(map));
+        markers.forEach(m => m.addTo(window.map));
       }
 
       // Debug rapide : zoom sur les points si au moins 1 marker
       if (markers.length > 0) {
         const group = L.featureGroup(markers);
-        map.fitBounds(group.getBounds().pad(0.2));
+        window.map.fitBounds(group.getBounds().pad(0.2));
       }
     })
     .catch((error) => console.error("[ICPE] Error:", error));
@@ -379,11 +379,11 @@ safeOnChange("AAC-checkbox", function (event) {
             const props = feature.properties;
             if (props?.NomDeAAC_A) layer.bindPopup(props.NomDeAAC_A);
           },
-        }).addTo(map);
+        }).addTo(window.map);
       })
       .catch((err) => console.error("Erreur chargement AAC_CVL.geojson :", err));
   } else {
-    if (aacLayer) map.removeLayer(aacLayer);
+    if (aacLayer) window.map.removeLayer(aacLayer);
   }
 });
 
@@ -393,16 +393,16 @@ safeOnChange("PPR-checkbox", function (event) {
       .then((data) => {
         pprLayer = L.geoJSON(data, {
           style: { color: "#e31a1c", weight: 2, fillOpacity: 0.3 },
-        }).addTo(map);
+        }).addTo(window.map);
       })
       .catch((err) => console.error("Erreur chargement PPR_CVL.geojson :", err));
   } else {
-    if (pprLayer) map.removeLayer(pprLayer);
+    if (pprLayer) window.map.removeLayer(pprLayer);
   }
 });
 
 /* ============================================================
-   6) TOPAGE cours d'eau dans la bbox — WFS Sandre (GML)
+   6) TOPAGE cours d'eau dans la window.bbox — WFS Sandre (GML)
    ============================================================ */
 
 safeOnChange("topagecebbox-checkbox", function (event) {
@@ -414,7 +414,7 @@ safeOnChange("topagecebbox-checkbox", function (event) {
   const urlbb3 =
     `${baseURL}?language=fre&SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0` +
     `&TYPENAMES=sa:CoursEau_FXX_Topage2024&SRSNAME=urn:ogc:def:crs:EPSG::4326` +
-    `&BBOX=${bboxToWfsBBOXParam_LatLon(bbox)}`;
+    `&BBOX=${bboxToWfsBBOXParam_LatLon(window.bbox)}`;
 
   console.log("[TOPAGE CE] URL:", urlbb3);
 
@@ -519,7 +519,7 @@ function addGMLToMap(gmlText) {
       }
 
       if (latlngs.length > 1) {
-        L.polyline(latlngs).addTo(map);
+        L.polyline(latlngs).addTo(window.map);
       }
     }
   } catch (e) {
@@ -532,9 +532,7 @@ function addGMLToMap(gmlText) {
    REJETS MIN – GeoJSON locaux (filtrés par BBOX du BV)
    ============================================================ */
 
-// Layers (si pas déjà définis ailleurs)
-var rejetsStepCollectivitesLayer = L.layerGroup().addTo(map);
-var rejetsSteuIndustriesLayer    = L.layerGroup().addTo(map);
+// Layers : créées dans mainoct.js (fallback à la volée si absent)
 
 // --- Helpers ------------------------------------------------
 
@@ -577,7 +575,12 @@ async function loadLocalGeojsonPointsIntoLayer({
   icon,
   popupFn
 }) {
-  if (!window.bbox) {
+  if (!layerGroup) {
+    if (!window.map) { console.warn("[REJETS] map non initialisée"); return; }
+    layerGroup = L.layerGroup().addTo(window.map);
+  }
+
+  if (!window.bbox || window.bbox.length !== 4) {
     console.warn("[REJETS] BBOX absente (BV non défini)");
     return;
   }
