@@ -558,8 +558,11 @@ function popupFromFields(props, fields) {
     .join("<br>");
 }
 
-function pointInBBoxLonLat(lon, lat, bboxRaw) {
-  const [minLon, minLat, maxLon, maxLat] = normalizeBBoxLonLat(bboxRaw);
+function pointInBBoxLonLat(lon, lat) {
+  if (!window.bbox || window.bbox.length !== 4) return false;
+
+  const [minLon, minLat, maxLon, maxLat] = normalizeBBoxLonLat(window.bbox);
+
   return (
     typeof lon === "number" &&
     typeof lat === "number" &&
@@ -571,12 +574,11 @@ function pointInBBoxLonLat(lon, lat, bboxRaw) {
 async function loadLocalGeojsonPointsIntoLayer({
   url,
   layerGroup,
-  bboxRaw,
   icon,
   popupFn
 }) {
-  if (!bboxRaw || bboxRaw.length !== 4) {
-    console.warn("[REJETS] BBOX BV absente ou invalide");
+  if (!window.bbox) {
+    console.warn("[REJETS] BBOX absente (BV non défini)");
     return;
   }
 
@@ -593,7 +595,7 @@ async function loadLocalGeojsonPointsIntoLayer({
 
     const [lon, lat] = f.geometry.coordinates;
 
-    if (!pointInBBoxLonLat(lon, lat, bboxRaw)) continue;
+    if (!pointInBBoxLonLat(lon, lat)) continue;
 
     kept++;
 
@@ -609,7 +611,6 @@ async function loadLocalGeojsonPointsIntoLayer({
 }
 
 // --- Listeners ---------------------------------------------
-
 safeOnChange("rejet-step-collectivites-checkbox", async function (event) {
 
   if (!event.target.checked) {
@@ -620,7 +621,6 @@ safeOnChange("rejet-step-collectivites-checkbox", async function (event) {
   await loadLocalGeojsonPointsIntoLayer({
     url: "./rejet_min_step_collectivites.geojson",
     layerGroup: rejetsStepCollectivitesLayer,
-    bboxRaw: bbox,
     icon: orangeIcon,
     popupFn: (props) => popupFromFields(props, [
       { key: "raison_sociale", label: "Raison sociale" },
@@ -629,7 +629,6 @@ safeOnChange("rejet-step-collectivites-checkbox", async function (event) {
   });
 
 });
-
 safeOnChange("rejet-steu-industries-checkbox", async function (event) {
 
   if (!event.target.checked) {
@@ -640,7 +639,6 @@ safeOnChange("rejet-steu-industries-checkbox", async function (event) {
   await loadLocalGeojsonPointsIntoLayer({
     url: "./rejet_min_steu_industries.geojson",
     layerGroup: rejetsSteuIndustriesLayer,
-    bboxRaw: bbox,
     icon: redIcon,
     popupFn: (props) => popupFromFields(props, [
       { key: "Nom Ouvrage Steu", label: "Nom" },
@@ -660,6 +658,7 @@ window.refreshRejetsIfChecked = function () {
   if (a?.checked) a.dispatchEvent(new Event("change"));
   if (b?.checked) b.dispatchEvent(new Event("change"));
 };
+
 
 
 
