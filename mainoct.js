@@ -1,17 +1,26 @@
+proj4.defs(
+  "EPSG:2154",
+  "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+);
 
-proj4.defs("EPSG:2154", "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+// On définit les variables pour pouvoir les utiliser dans les fichiers fonctions
+window.map = L.map("map", { zoomControl: false, doubleClickZoom: false })
+  .setView([46.603354, 1.888334], 7);
 
-//On définit les variables pour pouvoir les utiliser dans les fichiers fonctions
-window.map = L.map("map", { zoomControl: false ,    doubleClickZoom: false
+// ✅ Dans un module, on crée un alias local pour éviter les soucis de scope
+const map = window.map;
 
-
-}).setView([46.603354, 1.888334], 7);
+// Couches Leaflet
 window.pollutionLayer = L.layerGroup().addTo(map);
-window.icpeLayer = L.layerGroup().addTo(map);
+window.icpeLayer      = L.layerGroup().addTo(map);
+window.stepLayer      = L.layerGroup().addTo(map);
+window.ceLayer        = L.layerGroup().addTo(map);
 
-window.stepLayer = L.layerGroup().addTo(map);
-window.ceLayer = L.layerGroup().addTo(map);
+// Couches rejets (GeoJSON locaux à la racine)
+window.rejetsStepCollectivitesLayer = L.layerGroup().addTo(map);
+window.rejetsSteuIndustriesLayer    = L.layerGroup().addTo(map);
 
+// Etat
 var jsonData = null;
 window.bbox = [];
 var greenIcon = new L.Icon({
@@ -24,6 +33,7 @@ proj4.defs("EPSG:2154", "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0
 //On définit les variables pour pouvoir les utiliser dans les fichiers fonctions
 window.map = L.map("map", { zoomControl: false ,    doubleClickZoom: false
 
+						   
 
 }).setView([46.603354, 1.888334], 7);
 window.pollutionLayer = L.layerGroup().addTo(map);
@@ -309,6 +319,10 @@ map.on('click', function(e) {
     
             window.bbox = calculateBBoxFromGeoJSON(window.intersectedPolygon);
             console.log("Calculated BBOX:", window.bbox);
+
+			if (typeof window.refreshRejetsIfChecked === "function") {
+  window.refreshRejetsIfChecked();
+}
 
             // Rafraîchit les couches dépendantes du BV si elles sont cochées (défini dans event.js)
             if (typeof window.refreshBvLayers === "function") {
@@ -1065,6 +1079,7 @@ document.getElementById('checkbox-41').addEventListener('change', function(event
         }
         return content;
     }
+
 
 
 
