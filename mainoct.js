@@ -543,18 +543,6 @@ document.getElementById('checkbox-41').addEventListener('change', function(event
     }
 
 
-
-
-
-
-
-
-
-popupAnchor: [1, -34],
-shadowSize: [41, 41]
-});
-
-
 // Charger les données GeoJSON depuis le serveur
 window.geojsonLayer;
 
@@ -1056,6 +1044,7 @@ document.getElementById('checkbox-41').addEventListener('change', function(event
         }
         return content;
     }
+
 
 
 
