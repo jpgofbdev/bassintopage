@@ -7,7 +7,7 @@ proj4.defs(
 window.map = L.map("map", { zoomControl: false, doubleClickZoom: false })
   .setView([46.603354, 1.888334], 7);
 
-// ✅ Dans un module, on crée un alias local pour éviter les soucis de scope
+// Dans un module, alias local
 const map = window.map;
 
 // Couches Leaflet
@@ -23,52 +23,29 @@ window.rejetsSteuIndustriesLayer    = L.layerGroup().addTo(map);
 // Etat
 var jsonData = null;
 window.bbox = [];
+
+// Icônes
 var greenIcon = new L.Icon({
-iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-iconSize: [25, 41],
-iconAnchor: [12, 41],
-proj4.defs("EPSG:2154", "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
-
-//On définit les variables pour pouvoir les utiliser dans les fichiers fonctions
-window.map = L.map("map", { zoomControl: false ,    doubleClickZoom: false
-
-						   
-
-}).setView([46.603354, 1.888334], 7);
-window.pollutionLayer = L.layerGroup().addTo(map);
-window.icpeLayer = L.layerGroup().addTo(map);
-
-window.stepLayer = L.layerGroup().addTo(map);
-window.ceLayer = L.layerGroup().addTo(map);
-
-// Couches rejets (GeoJSON locaux à la racine)
-window.rejetsStepCollectivitesLayer = L.layerGroup().addTo(map);
-window.rejetsSteuIndustriesLayer = L.layerGroup().addTo(map);
-
-var jsonData = null;
-window.bbox = [];
-var greenIcon = new L.Icon({
-iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-iconSize: [25, 41],
-iconAnchor: [12, 41],
-popupAnchor: [1, -34],
-shadowSize: [41, 41]
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
-
 // Charger les données GeoJSON depuis le serveur
-window.geojsonLayer;
+window.geojsonLayer = undefined;
 
-fetch('./bvtopo4326_8cvl.geojson')
-    .then(response => response.json())
-    .then(data => {
-        // Créer une couche GeoJSON sans l'ajouter à la carte
-        window.geojsonLayer = L.geoJSON(data);
-        //.addTo(map); // Ne pas appeler addTo(map)
-    })
-    .catch(error => console.error('Erreur lors du chargement du fichier GeoJSON :', error));
+fetch("./bvtopo4326_8cvl.geojson")
+  .then((response) => response.json())
+  .then((data) => {
+    // Créer une couche GeoJSON sans l'ajouter à la carte
+    window.geojsonLayer = L.geoJSON(data);
+  })
+  .catch((error) =>
+    console.error("Erreur lors du chargement du fichier GeoJSON :", error)
+  );
 
 
 
@@ -1079,6 +1056,7 @@ document.getElementById('checkbox-41').addEventListener('change', function(event
         }
         return content;
     }
+
 
 
 
