@@ -528,6 +528,140 @@ function addGMLToMap(gmlText) {
 }
 
 
+/* ============================================================
+   REJETS MIN – GeoJSON locaux (filtrés par BBOX du BV)
+   ============================================================ */
+
+// Layers (si pas déjà définis ailleurs)
+var rejetsStepCollectivitesLayer = L.layerGroup().addTo(map);
+var rejetsSteuIndustriesLayer    = L.layerGroup().addTo(map);
+
+// --- Helpers ------------------------------------------------
+
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function popupFromFields(props, fields) {
+  return fields
+    .map(({ key, label }) => {
+      const v = props?.[key];
+      if (v === undefined || v === null || v === "") return null;
+      return `<strong>${escapeHtml(label || key)} :</strong> ${escapeHtml(v)}`;
+    })
+    .filter(Boolean)
+    .join("<br>");
+}
+
+function pointInBBoxLonLat(lon, lat, bboxRaw) {
+  const [minLon, minLat, maxLon, maxLat] = normalizeBBoxLonLat(bboxRaw);
+  return (
+    typeof lon === "number" &&
+    typeof lat === "number" &&
+    lon >= minLon && lon <= maxLon &&
+    lat >= minLat && lat <= maxLat
+  );
+}
+
+async function loadLocalGeojsonPointsIntoLayer({
+  url,
+  layerGroup,
+  bboxRaw,
+  icon,
+  popupFn
+}) {
+  if (!bboxRaw || bboxRaw.length !== 4) {
+    console.warn("[REJETS] BBOX BV absente ou invalide");
+    return;
+  }
+
+  const gj = await fetchJson(url);
+  const features = Array.isArray(gj.features) ? gj.features : [];
+
+  layerGroup.clearLayers();
+
+  let kept = 0;
+
+  for (const f of features) {
+    if (!f?.geometry) continue;
+    if (f.geometry.type !== "Point") continue;
+
+    const [lon, lat] = f.geometry.coordinates;
+
+    if (!pointInBBoxLonLat(lon, lat, bboxRaw)) continue;
+
+    kept++;
+
+    const props = f.properties || {};
+    const popup = popupFn ? popupFn(props) : "";
+
+    const marker = L.marker([lat, lon], { icon: icon || blackIcon });
+    if (popup) marker.bindPopup(popup);
+    marker.addTo(layerGroup);
+  }
+
+  console.log(`[REJETS] ${url} -> ${kept}/${features.length} dans BBOX`);
+}
+
+// --- Listeners ---------------------------------------------
+
+safeOnChange("rejet-step-collectivites-checkbox", async function (event) {
+
+  if (!event.target.checked) {
+    rejetsStepCollectivitesLayer.clearLayers();
+    return;
+  }
+
+  await loadLocalGeojsonPointsIntoLayer({
+    url: "./rejet_min_step_collectivites.geojson",
+    layerGroup: rejetsStepCollectivitesLayer,
+    bboxRaw: bbox,
+    icon: orangeIcon,
+    popupFn: (props) => popupFromFields(props, [
+      { key: "raison_sociale", label: "Raison sociale" },
+      { key: "Code Sandre retenu", label: "Code Sandre" }
+    ])
+  });
+
+});
+
+safeOnChange("rejet-steu-industries-checkbox", async function (event) {
+
+  if (!event.target.checked) {
+    rejetsSteuIndustriesLayer.clearLayers();
+    return;
+  }
+
+  await loadLocalGeojsonPointsIntoLayer({
+    url: "./rejet_min_steu_industries.geojson",
+    layerGroup: rejetsSteuIndustriesLayer,
+    bboxRaw: bbox,
+    icon: redIcon,
+    popupFn: (props) => popupFromFields(props, [
+      { key: "Nom Ouvrage Steu", label: "Nom" },
+      { key: "Code Sandre steu", label: "Code Sandre" },
+      { key: "Code Pegase", label: "Code Pegase" }
+    ])
+  });
+
+});
+
+// --- Refresh automatique si BV change ----------------------
+
+window.refreshRejetsIfChecked = function () {
+  const a = document.getElementById("rejet-step-collectivites-checkbox");
+  const b = document.getElementById("rejet-steu-industries-checkbox");
+
+  if (a?.checked) a.dispatchEvent(new Event("change"));
+  if (b?.checked) b.dispatchEvent(new Event("change"));
+};
+
+
 
 
 
