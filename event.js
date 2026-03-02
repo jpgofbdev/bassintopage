@@ -77,7 +77,7 @@ function makeColoredIcon(color) {
 }
 
 var orangeIcon = makeColoredIcon("orange");
-var redIcon = makeColoredIcon("red");
+var redIcon = makeColoredIcon("#c0392b");
 var blackIcon = makeColoredIcon("black");
 
 // STEP markers
@@ -661,6 +661,7 @@ window.refreshRejetsIfChecked = function () {
   if (a?.checked) a.dispatchEvent(new Event("change"));
   if (b?.checked) b.dispatchEvent(new Event("change"));
 };
+
 
 
 
